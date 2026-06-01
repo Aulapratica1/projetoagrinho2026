@@ -1,12 +1,144 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoGen - Calculadora de Eco-Eficiência Genética</title>
     <link rel="stylesheet" href="style.css">
-    <title>Projeto Agrinho 2026</title>
 </head>
 <body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-eco">Eco</span><span class="logo-gen">Gen</span>
+            </div>
+            <nav class="nav-menu">
+                <span class="tagline">Agrinho 2026: Tecnologia e Sustentabilidade</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="app-container">
+        
+        <section class="panel-inputs">
+            
+            <div class="card">
+                <h2>1. Dimensionamento da Lavoura</h2>
+                <div class="form-group">
+                    <label for="plantation-size">Tamanho da Plantação (em Hectares):</label>
+                    <input type="number" id="plantation-size" value="10" min="1" placeholder="Ex: 50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="variety-select">Selecione a Cultura/Gênero:</label>
+                    <select id="variety-select">
+                        </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>2. Simulador de Melhoramento Genético</h2>
+                <p class="card-subtitle">Ative aprimoramentos laboratoriais na semente melhorada:</p>
+                
+                <div class="checkbox-group">
+                    <label class="switch-container">
+                        <input type="checkbox" id="gene-drought" class="gene-modifier" data-water-bonus="15">
+                        <span class="slider"></span>
+                        <span class="switch-label">Resistência Extrema à Seca (+15% Economia H₂O)</span>
+                    </label>
+                    
+                    <label class="switch-container">
+                        <input type="checkbox" id="gene-pests" class="gene-modifier" data-yield-bonus="10">
+                        <span class="slider"></span>
+                        <span class="switch-label">Proteção Biológica contra Pragas (+10% Produtividade)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card core-registry">
+                <h2>3. Cadastrar Nova Variedade/Gênero</h2>
+                <form id="register-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-name">Nome da Cultura:</label>
+                            <input type="text" id="new-name" placeholder="Ex: Trigo Biotec" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-season">Época de Plantio:</label>
+                            <input type="text" id="new-season" placeholder="Ex: Outono/Inverno" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-water-common">Liters H₂O/Ha (Comum):</label>
+                            <input type="number" id="new-water-common" placeholder="Ex: 500000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-water-improved">Liters H₂O/Ha (Melhorada):</label>
+                            <input type="number" id="new-water-improved" placeholder="Ex: 380000" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Cadastrar e Selecionar Variety</button>
+                </form>
+            </div>
+
+        </section>
+
+        <section class="panel-results">
+            
+            <div class="metric-highlight-card">
+                <h3>Economia de Água Estimada</h3>
+                <div class="huge-number" id="water-saved-display">0 Litros</div>
+                <p>Poupados ao longo do ciclo completo de cultivo.</p>
+            </div>
+
+            <div class="card table-card">
+                <h2>Comparativo Direto de Desempenho</h2>
+                <div class="responsive-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indicador (Total da Área)</th>
+                                <th>Semente Comum</th>
+                                <th class="highlight-column">Semente Melhorada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Consumo de Água Total</strong></td>
+                                <td id="table-water-common">0 L</td>
+                                <td id="table-water-improved" class="highlight-column">0 L</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Produtividade Esperada</strong></td>
+                                <td>Padrão (100%)</td>
+                                <td id="table-yield-improved" class="highlight-column">100%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Época Recomendada</strong></td>
+                                <td colspan="2" id="table-season-recommendation" class="center-text">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card info-eco-card">
+                <h3>💡 Por que estes dados importam?</h3>
+                <p>As sementes melhoradas geneticamente reduzem a pegada hídrica e tornam a lavoura resiliente às mudanças climáticas locais, garantindo a segurança alimentar sem expandir o desmatamento.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 EcoGen - Plataforma Educativa Agrinho. Desenvolvido com foco em Sustentabilidade de Precisão.</p>
+    </footer>
+
     <script src="main.js"></script>
 </body>
 </html>

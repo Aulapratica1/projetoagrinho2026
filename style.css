@@ -1,0 +1,258 @@
+/* Definição de Variáveis Modernas e Minimalistas (Tema Agro-Tech) */
+:root {
+    --bg-global: #f4f7f5;
+    --bg-card: #ffffff;
+    --primary: #1b4332;       /* Verde floresta escuro e elegante */
+    --secondary: #40916c;     /* Verde folha equilibrado */
+    --accent: #2d6a4f;        /* Destaques de ação */
+    --text-main: #2d3748;     /* Cinza grafite de leitura limpa */
+    --text-muted: #718096;    /* Cinza secundário */
+    --border-color: #e2e8f0;  /* Divisórias sutis */
+    --highlight-bg: #e8f5e9;  /* Fundo verde sutil para realces */
+    --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-global);
+    color: var(--text-main);
+    font-family: var(--font-stack);
+    line-height: 1.6;
+    padding-bottom: 40px;
+}
+
+/* Cabeçalho */
+.main-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1.2rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.logo-eco { color: #74c69d; }
+.logo-gen { color: white; }
+
+.tagline {
+    font-size: 0.9rem;
+    opacity: 0.85;
+    font-weight: 300;
+}
+
+/* Layout Grid Principal */
+.app-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Estrutura de Cards */
+.card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.card h2 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--secondary);
+    padding-left: 8px;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* Formulários Estilizados */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #f8fafc;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    background-color: #fff;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Switches Customizados (Simulador Genético) */
+.switch-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.switch-container input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--secondary);
+}
+
+.switch-label {
+    user-select: none;
+}
+
+/* Botões Modernos */
+.btn-submit {
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: var(--accent);
+}
+
+/* Painel de Resultados */
+.metric-highlight-card {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border-radius: 12px;
+    padding: 2.5rem 1.75rem;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.metric-highlight-card h3 {
+    font-weight: 400;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.huge-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+}
+
+/* Tabela Comparativa */
+.responsive-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.highlight-column {
+    background-color: var(--highlight-bg);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.center-text {
+    text-align: center;
+    color: var(--accent);
+    font-weight: bold;
+    background-color: #f0fdf4;
+}
+
+.info-eco-card {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+}
+
+/* Rodapé */
+.main-footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    margin-top: 3rem;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
