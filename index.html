@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almanaque EcoGen - Calculadora de Eficiência Hídrica</title>
+    <title>EcoGen Desenvolvimentos - Painel de Eficiência Hídrica</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div id="toast-container"></div>
+
     <header class="main-header">
         <div class="header-container">
             <div class="logo">
-                <span class="logo-retro">ALMANAQUE ECOGEN</span>
+                <span class="logo-retro">ECOGEN DESENVOLVIMENTOS</span>
             </div>
             <nav class="nav-menu">
-                <span class="tagline">Ciência, Tradição e Inovação Genética</span>
+                <span class="tagline">Sistemas de Gestão Agronômica Avançada</span>
             </nav>
         </div>
     </header>
@@ -24,49 +26,43 @@
         <section class="panel-inputs">
             
             <div class="card">
-                <h2>I. Dimensionamento e Variedade</h2>
-                
+                <h2>I. Configuração da Lavoura</h2>
                 <div class="form-group">
-                    <label for="plantation-size">Área da Lavoura (Hectares - $A$):</label>
+                    <label for="plantation-size">Área da Lavoura (Hectares):</label>
                     <input type="number" id="plantation-size" value="10" min="1" step="any">
                 </div>
-                
                 <div class="form-group">
-                    <label for="variety-select">Cultura / Gênero Ativo:</label>
-                    <select id="variety-select">
-                        </select>
+                    <label for="variety-select">Cultura Ativa no Simulador:</label>
+                    <select id="variety-select"></select>
                 </div>
             </div>
 
             <div class="card">
-                <h2>II. Modificadores Genéticos Aplicados</h2>
-                <p class="card-subtitle">Ajustes biotecnológicos que alteram o coeficiente de cultivo ($K_c$):</p>
-                
+                <h2>II. Modificadores Laboratoriais</h2>
+                <p class="card-subtitle">Ative as otimizações bioengenheiradas na semente melhorada:</p>
                 <div class="checkbox-group">
                     <label class="switch-container">
                         <input type="checkbox" id="gene-drought" class="gene-modifier" data-kc-reduction="15">
-                        <span class="switch-label">Modificação de Estômatos (Reduz $K_c$ em 15%)</span>
+                        <span class="switch-label">Otimização de Estômatos (Reduz Demanda em 15%)</span>
                     </label>
-                    
                     <label class="switch-container">
                         <input type="checkbox" id="gene-roots" class="gene-modifier" data-kc-reduction="10">
-                        <span class="switch-label">Aprofundamento Radicular Eficiente (Reduz $K_c$ em 10%)</span>
+                        <span class="switch-label">Aprofundamento Radicular (Reduz Demanda em 10%)</span>
                     </label>
                 </div>
             </div>
 
-            <div class="card core-registry">
-                <h2 id="form-title">III. Cadastrar / Editar Variedade</h2>
-                
+            <div class="card">
+                <h2>III. Indexador de Sementes Web</h2>
                 <div class="search-mock-container">
-                    <input type="text" id="search-input" placeholder="Buscar variedade no banco digital... (Ex: Trigo ou Café)">
-                    <button type="button" id="btn-search" class="btn-secondary">Buscar via Web</button>
+                    <input type="text" id="search-input" placeholder="Buscar variedade no banco digital... (Ex: Trigo, Café)">
+                    <button type="button" id="btn-search" class="btn-secondary">Buscar Dados</button>
                 </div>
-                <hr class="divider">
+            </div>
 
+            <div class="card">
+                <h2>IV. Cadastrar Nova Variedade</h2>
                 <form id="register-form">
-                    <input type="hidden" id="edit-id" value="">
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="new-name">Nome da Cultura:</label>
@@ -77,29 +73,54 @@
                             <input type="text" id="new-season" required placeholder="Ex: Outubro/Novembro">
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="new-etc-common">Evapotranspiração $ET_c$ Comum (mm/ciclo):</label>
+                            <label for="new-etc-common">Evapotranspiração Comum (mm/ciclo):</label>
                             <input type="number" id="new-etc-common" required placeholder="Ex: 500">
                         </div>
                         <div class="form-group">
-                            <label for="new-etc-improved">Evapotranspiração $ET_c$ Melhorada (mm/ciclo):</label>
+                            <label for="new-etc-improved">Evapotranspiração Melhorada (mm/ciclo):</label>
                             <input type="number" id="new-etc-improved" required placeholder="Ex: 400">
                         </div>
                     </div>
-                    
+                    <button type="submit" class="btn-submit">Adicionar ao Banco</button>
+                </form>
+            </div>
+
+            <div id="edit-card-panel" class="card edit-highlight hidden">
+                <h2>V. Painel de Edição</h2>
+                <form id="edit-form">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-name">Nome da Cultura:</label>
+                            <input type="text" id="edit-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-season">Época Recomendada:</label>
+                            <input type="text" id="edit-season" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-etc-common">Evapotranspiração Comum (mm):</label>
+                            <input type="number" id="edit-etc-common" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-etc-improved">Evapotranspiração Melhorada (mm):</label>
+                            <input type="number" id="edit-etc-improved" required>
+                        </div>
+                    </div>
                     <div class="form-buttons">
-                        <button type="submit" id="btn-submit-form" class="btn-submit">Salvar Variedade</button>
-                        <button type="button" id="btn-cancel-edit" class="btn-cancel hidden">Cancelar Edição</button>
+                        <button type="submit" class="btn-submit">Salvar Alterações</button>
+                        <button type="button" id="btn-cancel-edit" class="btn-cancel">Cancelar</button>
                     </div>
                 </form>
             </div>
 
             <div class="card">
-                <h2>IV. Banco de Sementes Cadastradas</h2>
-                <ul id="variety-list" class="management-list">
-                    </ul>
+                <h2>VI. Banco de Sementes Cadastradas</h2>
+                <ul id="variety-list" class="management-list"></ul>
             </div>
 
         </section>
@@ -109,19 +130,7 @@
             <div class="metric-highlight-card">
                 <h3>Volume de Água Conservado</h3>
                 <div class="huge-number" id="water-saved-display">0 Litros</div>
-                <p>Equivalente à diferença real calculada pelas equações de balanço hídrico.</p>
-            </div>
-
-            <div class="card formula-card">
-                <h2>Fórmulas Agronômicas Utilizadas</h2>
-                <p class="formula-text">
-                    A necessidade real de água ($NIR$) baseia-se na Evapotranspiração do cultivo ($ET_c$) ajustada pela Eficiência do Sistema de Irrigação ($E_i$, padronizada em $80\%$):
-                </p>
-                $$NIR = \frac{ET_c}{E_i}$$
-                <p class="formula-text">
-                    O volume total em litros ($V$) para a área ($A$) em hectares é obtido através da constante de conversão volumétrica de lâmina d'água ($1\text{ mm} = 10.000\text{ L/ha}$):
-                </p>
-                $$V = NIR \times A \times 10.000$$
+                <p>Diferença líquida real com base no manejo eco-eficiente.</p>
             </div>
 
             <div class="card table-card">
@@ -137,12 +146,12 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Demanda Bruta Lâmina ($NIR$)</strong></td>
+                                <td><strong>Necessidade de Irrigação Líquida (Lâmina)</strong></td>
                                 <td id="table-nir-common">0 mm</td>
                                 <td id="table-nir-improved" class="highlight-column">0 mm</td>
                             </tr>
                             <tr>
-                                <td><strong>Consumo Volumétrico Total ($V$)</strong></td>
+                                <td><strong>Consumo Volumétrico Total</strong></td>
                                 <td id="table-water-common">0 L</td>
                                 <td id="table-water-improved" class="highlight-column">0 L</td>
                             </tr>

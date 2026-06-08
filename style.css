@@ -1,16 +1,18 @@
-/* Variedades e Design de Estilo Old Money / Retrô Agrícola */
+/* Paleta Retrô Ultra Profissional (Old Money Style) */
 :root {
-    --bg-global: #fcf9f2;        /* Tom creme/papel envelhecido suave */
+    --bg-global: #f5f2eb;        /* Creme linho clássico */
     --bg-card: #ffffff;
-    --primary: #0b251a;          /* Verde-garrafa escuro aristocrático */
-    --secondary: #2a4736;        /* Verde oliva fechado */
-    --accent: #8c6239;           /* Tom marrom couro/bronze antigo */
-    --text-main: #1c2421;        /* Quase preto para alta leitura */
-    --text-muted: #5c6762;       /* Cinza esverdeado opaco */
-    --border-color: #d1c7bd;     /* Bordas estilo pergaminho/linhas clássicas */
-    --highlight-bg: #f3ede2;     /* Destaque amarelado/creme */
-    --font-serif: "Georgia", Times, serif;
-    --font-sans: "Courier New", Courier, monospace;
+    --primary: #0a2216;          /* Verde-garrafa britânico profundo */
+    --secondary: #223e2f;        /* Sombra de oliveira fosca */
+    --accent: #7c5835;           /* Bronze/Couro curtido */
+    --text-main: #191f1c;        /* Grafite fechado */
+    --text-muted: #535e58;       /* Tom neutro de suporte */
+    --border-color: #ced1ca;     /* Divisores estruturais suaves */
+    --highlight-bg: #f2ede0;     /* Fundo de tabela aristocrático */
+    --success: #1b5e20;
+    --error: #b71c1c;
+    --font-serif: "Georgia", "Times New Roman", serif;
+    --font-mono: "Courier New", Courier, monospace;
 }
 
 * {
@@ -23,55 +25,82 @@ body {
     background-color: var(--bg-global);
     color: var(--text-main);
     font-family: var(--font-serif);
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-/* Cabeçalho Retrô */
+/* Notificações Toasts */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    background-color: var(--primary);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+    border-left: 5px solid var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s forwards;
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--error); }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Cabeçalho */
 .main-header {
     background-color: var(--primary);
-    color: #fcf9f2;
-    padding: 2rem;
+    color: #f5f2eb;
+    padding: 1.75rem;
     text-align: center;
-    border-bottom: 3px double var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
 .logo-retro {
-    font-size: 2rem;
-    letter-spacing: 4px;
-    font-weight: bold;
-    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    font-weight: 700;
 }
 
 .tagline {
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
     text-transform: uppercase;
     display: block;
-    margin-top: 0.5rem;
-    color: var(--border-color);
+    margin-top: 0.4rem;
+    opacity: 0.8;
 }
 
-/* Grid Layout */
+/* Grid Estrutural */
 .app-container {
-    max-width: 1250px;
+    max-width: 1300px;
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     gap: 2rem;
 }
 
-/* Cards com estética de jornal antigo */
+/* Cards de Estilo Editorial */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 2px 2px 0px var(--border-color);
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.05);
 }
 
 .card h2 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--primary);
     margin-bottom: 1rem;
     text-transform: uppercase;
@@ -81,38 +110,45 @@ body {
 }
 
 .card-subtitle {
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--text-muted);
     margin-bottom: 1rem;
 }
 
-/* Inputs e Elementos de Formulário */
+.edit-highlight {
+    border: 1px solid var(--accent);
+    background-color: #fffdf9;
+}
+
+/* Elementos de Formulário */
 .form-group {
     margin-bottom: 1rem;
 }
 
 .form-group label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
 }
 
 input[type="number"],
 input[type="text"],
 select {
     width: 100%;
-    padding: 0.6rem;
+    padding: 0.65rem;
     border: 1px solid var(--border-color);
-    background-color: #fffdfa;
+    background-color: #faf9f5;
     font-family: var(--font-serif);
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--text-main);
 }
 
 input:focus, select:focus {
-    outline: 2px solid var(--secondary);
+    outline: 1px solid var(--accent);
+    background-color: #ffffff;
 }
 
 .form-row {
@@ -121,51 +157,54 @@ input:focus, select:focus {
     gap: 1rem;
 }
 
-/* Switches Customizados */
+/* Switches Clássicos */
 .switch-container {
     display: flex;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     cursor: pointer;
+    font-size: 0.9rem;
 }
 
 .switch-container input {
-    margin-right: 10px;
+    margin-right: 12px;
+    width: 16px;
+    height: 16px;
     accent-color: var(--primary);
 }
 
-/* Botões Clássicos */
+/* Botões do Sistema */
 .btn-submit {
     background-color: var(--primary);
     color: white;
     border: none;
-    padding: 0.75rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
     cursor: pointer;
     width: 100%;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: bold;
 }
 
-.btn-submit:hover {
-    background-color: var(--secondary);
-}
+.btn-submit:hover { background-color: var(--secondary); }
 
 .btn-secondary {
     background-color: var(--accent);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0 1.25rem;
     cursor: pointer;
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
     font-size: 0.8rem;
+    text-transform: uppercase;
 }
 
 .btn-cancel {
-    background-color: #a94442;
-    color: white;
-    border: none;
-    padding: 0.75rem;
+    background-color: #e5e7eb;
+    color: #374151;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.25rem;
     cursor: pointer;
     text-transform: uppercase;
 }
@@ -176,20 +215,13 @@ input:focus, select:focus {
     margin-top: 1rem;
 }
 
-/* Sistema de Busca e Divisores */
+/* Módulo de Busca */
 .search-mock-container {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1rem;
 }
 
-.divider {
-    border: 0;
-    border-top: 1px double var(--border-color);
-    margin: 1rem 0;
-}
-
-/* Lista de Gerenciamento */
+/* Listagem Estrutural (CRUD) */
 .management-list {
     list-style: none;
 }
@@ -198,9 +230,9 @@ input:focus, select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
+    padding: 0.65rem 0;
     border-bottom: 1px dashed var(--border-color);
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
     font-size: 0.85rem;
 }
 
@@ -208,49 +240,41 @@ input:focus, select:focus {
     background: none;
     border: none;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 12px;
     font-weight: bold;
     text-decoration: underline;
-}
-
-.btn-edit-action { color: var(--accent); }
-.btn-delete-action { color: #a94442; }
-
-/* Bloco de Resultados */
-.metric-highlight-card {
-    background-color: var(--primary);
-    color: #fcf9f2;
-    padding: 2rem;
-    text-align: center;
-    border: 2px solid var(--accent);
-}
-
-.huge-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 0.5rem 0;
-    font-family: var(--font-sans);
-}
-
-.formula-card {
-    background-color: #fdfcf7;
-    font-style: italic;
-}
-
-.formula-text {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
     font-family: var(--font-serif);
 }
 
-/* Tabelas */
+.btn-edit-action { color: var(--accent); }
+.btn-delete-action { color: var(--error); }
+
+/* Bloco de Alta Relevância */
+.metric-highlight-card {
+    background-color: var(--primary);
+    color: #f5f2eb;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    border: 1px solid var(--accent);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
+}
+
+.huge-number {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    font-family: var(--font-mono);
+    color: #fff;
+}
+
+/* Tabelas e Relatórios */
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
 th, td {
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     font-size: 0.9rem;
 }
@@ -258,32 +282,28 @@ th, td {
 th {
     background-color: var(--primary);
     color: white;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
 }
 
-.highlight-column {
-    background-color: var(--highlight-bg);
-}
-
-.center-text {
-    text-align: center;
-    font-weight: bold;
-}
-
+.highlight-column { background-color: var(--highlight-bg); }
+.center-text { text-align: center; font-weight: bold; }
 .hidden { display: none !important; }
 
 /* Rodapé Exigido */
 .main-footer {
     text-align: center;
-    padding: 2rem;
+    padding: 2.5rem;
     background-color: var(--primary);
-    color: #fcf9f2;
-    font-family: var(--font-sans);
+    color: #f5f2eb;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
     letter-spacing: 2px;
     margin-top: 4rem;
-    border-top: 3px double var(--accent);
+    border-top: 2px solid var(--accent);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .app-container { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
 }

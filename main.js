@@ -1,16 +1,16 @@
 /**
- * Banco de dados estrutural e inicial do sistema (Armazenado em Array)
+ * EcoGen Desenvolvimentos - Mecanismo de Dados Interno
  */
 let varietyDatabase = [
     {
-        id: "1",
+        id: "1710000001",
         name: "Soja Glicine Standard",
         season: "Outubro a Dezembro",
-        etcCommon: 500, // mm por ciclo
-        etcImproved: 400 // mm por ciclo
+        etcCommon: 500,
+        etcImproved: 400
     },
     {
-        id: "2",
+        id: "1710000002",
         name: "Milho Zea Maiz",
         season: "Setembro a Novembro",
         etcCommon: 600,
@@ -18,60 +18,72 @@ let varietyDatabase = [
     }
 ];
 
-// Banco de dados simulado para buscas na "web/Google"
-const googleMockDatabase = [
+// Repositório Digital de Simulação de Busca Web
+const webSearchRegistry = [
     { name: "Trigo Nobre", season: "Maio a Julho", etcCommon: 450, etcImproved: 360 },
     { name: "Café Bourbon Tech", season: "Ano Todo", etcCommon: 1200, etcImproved: 950 },
-    { name: "Arroz Agulha", season: "Novembro a Dezembro", etcCommon: 800, etcImproved: 680 }
+    { name: "Arroz Agulha Precoce", season: "Novembro a Dezembro", etcCommon: 800, etcImproved: 680 }
 ];
 
-// Elementos da Interface
+// Constante Agronômica Fixa (Eficiência do Sistema de Irrigação = 80%)
+const SYSTEM_EFFICIENCY = 0.80;
+
+// Seletores de Interface Dom
 const sizeInput = document.getElementById('plantation-size');
 const varietySelect = document.getElementById('variety-select');
 const geneModifiers = document.querySelectorAll('.gene-modifier');
 const varietyListElement = document.getElementById('variety-list');
 
-// Elementos de Exibição de Métricas
-const waterSavedDisplay = document.getElementById('water-saved-display');
-const tableNirCommon = document.getElementById('table-nir-common');
-const tableNirImproved = document.getElementById('table-nir-improved');
-const tableWaterCommon = document.getElementById('table-water-common');
-const tableWaterImproved = document.getElementById('table-water-improved');
-const tableSeasonRecommendation = document.getElementById('table-season-recommendation');
-
-// Componentes do Formulário de Gerenciamento
+// Formulários Independentes
 const registerForm = document.getElementById('register-form');
-const editIdInput = document.getElementById('edit-id');
-const formTitle = document.getElementById('form-title');
+const editCardPanel = document.getElementById('edit-card-panel');
+const editForm = document.getElementById('edit-form');
 const btnCancelEdit = document.getElementById('btn-cancel-edit');
+
+// Elementos de Pesquisa e Displays
 const searchInput = document.getElementById('search-input');
 const btnSearch = document.getElementById('btn-search');
+const waterSavedDisplay = document.getElementById('water-saved-display');
 
-const IRRIGATION_EFFICIENCY = 0.80; // Ei = 80% (Padrão para sistemas de aspersão tradicionais)
-
+// Inicializador da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
-    updateUI();
-    
-    sizeInput.addEventListener('input', runAgronomicCalculator);
-    varietySelect.addEventListener('change', runAgronomicCalculator);
-    geneModifiers.forEach(box => box.addEventListener('change', runAgronomicCalculator));
-    
-    registerForm.addEventListener('submit', handleFormSubmit);
-    btnCancelEdit.addEventListener('click', cancelEditing);
-    btnSearch.addEventListener('click', triggerGoogleSearch);
+    renderInterface();
+
+    // Ouvintes de evento em tempo real para cálculos
+    sizeInput.addEventListener('input', runEngineCalculations);
+    varietySelect.addEventListener('change', runEngineCalculations);
+    geneModifiers.forEach(box => box.addEventListener('change', runEngineCalculations));
+
+    // Submissão separada de Cadastrar e Editar
+    registerForm.addEventListener('submit', handleRegistration);
+    editForm.addEventListener('submit', handleEdition);
+    btnCancelEdit.addEventListener('click', closeEditionPanel);
+    btnSearch.addEventListener('click', performWebSearch);
 });
 
 /**
- * Atualiza os elementos visuais dependentes dos dados mutáveis
+ * Emissor de Alertas Toast Customizados (Profissional)
  */
-function updateUI() {
-    populateSelect();
-    renderManagementList();
-    runAgronomicCalculator();
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
 }
 
-function populateSelect() {
-    const currentSelection = varietySelect.value;
+/**
+ * Atualiza e renderiza todos os componentes síncronos
+ */
+function renderInterface() {
+    const previousSelection = varietySelect.value;
+    
+    // Limpa e popula o seletor da calculadora
     varietySelect.innerHTML = '';
     varietyDatabase.forEach(item => {
         const option = document.createElement('option');
@@ -79,150 +91,187 @@ function populateSelect() {
         option.textContent = item.name;
         varietySelect.appendChild(option);
     });
-    if (currentSelection && varietyDatabase.some(i => i.id === currentSelection)) {
-        varietySelect.value = currentSelection;
-    }
-}
 
-/**
- * Renderiza a lista de edição e exclusão (CRUD)
- */
-function renderManagementList() {
+    if (previousSelection && varietyDatabase.some(i => i.id === previousSelection)) {
+        varietySelect.value = previousSelection;
+    }
+
+    // Renderiza a lista de gerenciamento separada
     varietyListElement.innerHTML = '';
     varietyDatabase.forEach(item => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <span>${item.name} (${item.etcCommon}mm / ${item.etcImproved}mm)</span>
+            <span><strong>${item.name}</strong> - Lâmina Comum: ${item.etcCommon}mm</span>
             <div class="list-actions">
-                <button type="button" class="btn-edit-action" onclick="prepareEdit('${item.id}')">Editar</button>
-                <button type="button" class="btn-delete-action" onclick="deleteVariety('${item.id}')">Excluir</button>
+                <button type="button" class="btn-edit-action" onclick="openEditionPanel('${item.id}')">Editar</button>
+                <button type="button" class="btn-delete-action" onclick="deleteRegistry('${item.id}')">Excluir</button>
             </div>
         `;
         varietyListElement.appendChild(li);
     });
+
+    runEngineCalculations();
 }
 
 /**
- * Executa as fórmulas agronômicas de irrigação líquida e conversão volumétrica
+ * Core de Processamento Numérico Agronômico
  */
-function runAgronomicCalculator() {
-    const area = parseFloat(sizeInput.value) || 0;
-    const targetId = varietySelect.value;
-    const culture = varietyDatabase.find(i => i.id === targetId);
+function runEngineCalculations() {
+    const hectares = parseFloat(sizeInput.value) || 0;
+    const activeId = varietySelect.value;
+    const selectedCulture = varietyDatabase.find(i => i.id === activeId);
 
-    if (!culture) {
+    if (!selectedCulture) {
         waterSavedDisplay.textContent = "0 Litros";
+        document.getElementById('table-nir-common').textContent = "0 mm";
+        document.getElementById('table-nir-improved').textContent = "0 mm";
+        document.getElementById('table-water-common').textContent = "0 L";
+        document.getElementById('table-water-improved').textContent = "0 L";
+        document.getElementById('table-season-recommendation').textContent = "-";
         return;
     }
 
-    // Aplicação dos modificadores de laboratório (Redução direta do Kc/Etc)
-    let kcReduction = 0;
-    geneModifiers.forEach(box => {
-        if (box.checked) kcReduction += parseFloat(box.dataset.kcReduction);
+    // Processamento de Modificadores Biológicos
+    let targetedReduction = 0;
+    geneModifiers.forEach(modifier => {
+        if (modifier.checked) targetedReduction += parseFloat(modifier.dataset.kcReduction);
     });
 
-    const adjustedEtcImproved = culture.etcImproved * ((100 - kcReduction) / 100);
+    const calculatedEtcImproved = selectedCulture.etcImproved * ((100 - targetedReduction) / 100);
 
-    // Fórmula Agronômica: Necessidade de Irrigação Líquida (NIR = ETc / Ei)
-    const nirCommon = culture.etcCommon / IRRIGATION_EFFICIENCY;
-    const nirImproved = adjustedEtcImproved / IRRIGATION_EFFICIENCY;
+    // Cálculos Operacionais Técnicos (NIR = ETc / Ei)
+    const nirCommon = selectedCulture.etcCommon / SYSTEM_EFFICIENCY;
+    const nirImproved = calculatedEtcImproved / SYSTEM_EFFICIENCY;
 
-    // Fórmula de Conversão Volumétrica Total (Lâmina mm para Litros numa Área A): V = NIR * A * 10.000
-    const litersCommon = nirCommon * area * 10000;
-    const litersImproved = nirImproved * area * 10000;
-    const waterSaved = litersCommon - litersImproved;
+    // Conversão Volumétrica de Campo (V = NIR * Área * 10.000)
+    const volumeCommon = nirCommon * hectares * 10000;
+    const volumeImproved = nirImproved * hectares * 10000;
+    const netSaving = volumeCommon - volumeImproved;
 
-    // Atualização da Tabela e Painel
-    waterSavedDisplay.textContent = `${Math.round(waterSaved).toLocaleString('pt-BR')} Litros`;
-    tableNirCommon.textContent = `${Math.round(nirCommon)} mm`;
-    tableNirImproved.textContent = `${Math.round(nirImproved)} mm`;
-    tableWaterCommon.textContent = `${Math.round(litersCommon).toLocaleString('pt-BR')} L`;
-    tableWaterImproved.textContent = `${Math.round(litersImproved).toLocaleString('pt-BR')} L`;
-    tableSeasonRecommendation.textContent = `Período de Semeadura Recomendado: ${culture.season}`;
+    // Atualização dos Campos Nominais
+    waterSavedDisplay.textContent = `${Math.round(netSaving).toLocaleString('pt-BR')} Litros`;
+    document.getElementById('table-nir-common').textContent = `${Math.round(nirCommon)} mm`;
+    document.getElementById('table-nir-improved').textContent = `${Math.round(nirImproved)} mm`;
+    document.getElementById('table-water-common').textContent = `${Math.round(volumeCommon).toLocaleString('pt-BR')} L`;
+    document.getElementById('table-water-improved').textContent = `${Math.round(volumeImproved).toLocaleString('pt-BR')} L`;
+    document.getElementById('table-season-recommendation').textContent = `Janela Recomendada: ${selectedCulture.season}`;
 }
 
 /**
- * Processa a submissão do formulário (Criação ou Edição)
+ * Operação: Cadastrar Variedade (Create do CRUD)
  */
-function handleFormSubmit(e) {
+function handleRegistration(e) {
     e.preventDefault();
     
-    const id = editIdInput.value;
     const name = document.getElementById('new-name').value;
     const season = document.getElementById('new-season').value;
     const etcCommon = parseFloat(document.getElementById('new-etc-common').value);
     const etcImproved = parseFloat(document.getElementById('new-etc-improved').value);
 
-    if (id) {
-        // Modo Edição (U do CRUD)
-        const index = varietyDatabase.findIndex(i => i.id === id);
-        if (index !== -1) {
-            varietyDatabase[index] = { id, name, season, etcCommon, etcImproved };
-        }
-        cancelEditing();
-    } else {
-        // Modo Criação (C do CRUD)
-        const newId = String(Date.now());
-        varietyDatabase.push({ id: newId, name, season, etcCommon, etcImproved });
-        registerForm.reset();
+    const isDuplicate = varietyDatabase.some(i => i.name.toLowerCase() === name.toLowerCase());
+    if (isDuplicate) {
+        showToast("Erro: Uma cultura com este nome já consta no sistema.", "error");
+        return;
     }
 
-    updateUI();
-}
-
-/**
- * Prepara os campos do formulário para edição (Preenchimento)
- */
-window.prepareEdit = function(id) {
-    const culture = varietyDatabase.find(i => i.id === id);
-    if (!culture) return;
-
-    editIdInput.value = culture.id;
-    document.getElementById('new-name').value = culture.name;
-    document.getElementById('new-season').value = culture.season;
-    document.getElementById('new-etc-common').value = culture.etcCommon;
-    document.getElementById('new-etc-improved').value = culture.etcImproved;
-
-    formTitle.textContent = "III. Editando Variedade";
-    document.getElementById('btn-submit-form').textContent = "Atualizar Dados";
-    btnCancelEdit.classList.remove('hidden');
-};
-
-function cancelEditing() {
-    editIdInput.value = "";
+    const uniqueId = String(Date.now());
+    varietyDatabase.push({ id: uniqueId, name, season, etcCommon, etcImproved });
+    
     registerForm.reset();
-    formTitle.textContent = "III. Cadastrar / Editar Variedade";
-    document.getElementById('btn-submit-form').textContent = "Salvar Variedade";
-    btnCancelEdit.classList.add('hidden');
+    showToast(`Variedade "${name}" registrada com sucesso.`);
+    renderInterface();
 }
 
 /**
- * Remove elemento do array de dados (D do CRUD)
+ * Operação: Abrir Painel Independente de Edição (Read para Update)
  */
-window.deleteVariety = function(id) {
-    if (confirm("Deseja realmente remover esta variedade do banco de dados?")) {
-        varietyDatabase = varietyDatabase.filter(item => item.id !== id);
-        updateUI();
+window.openEditionPanel = function(id) {
+    const item = varietyDatabase.find(i => i.id === id);
+    if (!item) {
+        showToast("Erro ao localizar registro para alteração.", "error");
+        return;
     }
+
+    document.getElementById('edit-id').value = item.id;
+    document.getElementById('edit-name').value = item.name;
+    document.getElementById('edit-season').value = item.season;
+    document.getElementById('edit-etc-common').value = item.etcCommon;
+    document.getElementById('edit-etc-improved').value = item.etcImproved;
+
+    editCardPanel.classList.remove('hidden');
+    editCardPanel.scrollIntoView({ behavior: 'smooth' });
 };
 
 /**
- * Função de busca que simula uma varredura do Google trazendo dados agronômicos indexados
+ * Operação: Salvar Edição de Dados (Update do CRUD)
  */
-function triggerGoogleSearch() {
-    const query = searchInput.value.trim().toLowerCase();
-    if (!query) return alert("Digite o nome de um cultivo para pesquisar.");
+function handleEdition(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('edit-id').value;
+    const name = document.getElementById('edit-name').value;
+    const season = document.getElementById('edit-season').value;
+    const etcCommon = parseFloat(document.getElementById('edit-etc-common').value);
+    const etcImproved = parseFloat(document.getElementById('edit-etc-improved').value);
 
-    // Procura por correspondência parcial no banco simulado externo
-    const match = googleMockDatabase.find(item => item.name.toLowerCase().includes(query));
-
-    if (match) {
-        document.getElementById('new-name').value = match.name;
-        document.getElementById('new-season').value = match.season;
-        document.getElementById('new-etc-common').value = match.etcCommon;
-        document.getElementById('new-etc-improved').value = match.etcImproved;
-        alert(`Sucesso! Encontrado via web: "${match.name}". Os dados técnicos foram inseridos no formulário.`);
+    const index = varietyDatabase.findIndex(i => i.id === id);
+    if (index !== -1) {
+        varietyDatabase[index] = { id, name, season, etcCommon, etcImproved };
+        showToast("Dados atualizados com sucesso no sistema.");
+        closeEditionPanel();
+        renderInterface();
     } else {
-        alert("Variedade não encontrada na indexação simulada. Tente termos como 'Trigo', 'Café' ou 'Arroz'.");
+        showToast("Falha operacional ao atualizar dados.", "error");
+    }
+}
+
+function closeEditionPanel() {
+    editForm.reset();
+    editCardPanel.classList.add('hidden');
+}
+
+/**
+ * Operação: Excluir Registro (Delete do CRUD)
+ */
+window.deleteRegistry = function(id) {
+    const target = varietyDatabase.find(i => i.id === id);
+    if (!target) return;
+
+    if (varietyDatabase.length <= 1) {
+        showToast("Operação negada. O banco necessita de ao menos uma cultura ativa.", "error");
+        return;
+    }
+
+    varietyDatabase = varietyDatabase.filter(item => item.id !== id);
+    showToast(`Cultura removida do banco de dados.`);
+    
+    // Se o painel de edição do item deletado estiver aberto, fecha-o
+    if (document.getElementById('edit-id').value === id) {
+        closeEditionPanel();
+    }
+    
+    renderInterface();
+}
+
+/**
+ * Mecanismo de Busca Web Simulado (Google Index Tracker)
+ */
+function performWebSearch() {
+    const inputTerms = searchInput.value.trim().toLowerCase();
+    if (!inputTerms) {
+        showToast("Por favor, insira termos válidos de pesquisa.", "error");
+        return;
+    }
+
+    const discovered = webSearchRegistry.find(item => item.name.toLowerCase().includes(inputTerms));
+
+    if (discovered) {
+        document.getElementById('new-name').value = discovered.name;
+        document.getElementById('new-season').value = discovered.season;
+        document.getElementById('new-etc-common').value = discovered.etcCommon;
+        document.getElementById('new-etc-improved').value = discovered.etcImproved;
+        showToast(`Metadados de "${discovered.name}" indexados e importados!`);
+    } else {
+        showToast("Nenhum dado correspondente encontrado nos servidores.", "error");
     }
 }
