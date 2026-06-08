@@ -121,6 +121,17 @@ body {
     background-color: #fffdf9;
 }
 
+/* Caixa de Exibição de Clima */
+.climate-display-box {
+    background-color: #faf9f3;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+}
+
 /* Elementos de Formulário */
 .form-group {
     margin-bottom: 1rem;
@@ -189,17 +200,6 @@ input:focus, select:focus {
 
 .btn-submit:hover { background-color: var(--secondary); }
 
-.btn-secondary {
-    background-color: var(--accent);
-    color: white;
-    border: none;
-    padding: 0 1.25rem;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-}
-
 .btn-cancel {
     background-color: #e5e7eb;
     color: #374151;
@@ -213,12 +213,6 @@ input:focus, select:focus {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
-}
-
-/* Módulo de Busca */
-.search-mock-container {
-    display: flex;
-    gap: 0.5rem;
 }
 
 /* Listagem Estrutural (CRUD) */

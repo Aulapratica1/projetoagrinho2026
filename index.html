@@ -53,11 +53,19 @@
             </div>
 
             <div class="card">
-                <h2>III. Indexador de Sementes Web</h2>
-                <div class="search-mock-container">
-                    <input type="text" id="search-input" placeholder="Buscar variedade no banco digital... (Ex: Trigo, Café)">
-                    <button type="button" id="btn-search" class="btn-secondary">Buscar Dados</button>
+                <h2>III. Monitor de Zoneamento Climático</h2>
+                <p class="card-subtitle">Selecione a macrorregião para análise das condições de contorno:</p>
+                <div class="form-group">
+                    <label for="region-select">Macrorregião Agrícola:</label>
+                    <select id="region-select">
+                        <option value="sul">Região Sul (Alta umidade / Riscos de geadas pontuais)</option>
+                        <option value="centro-oeste">Região Centro-Oeste (Clima sazonal / Alta Evapotranspiração)</option>
+                        <option value="nordeste">Região Nordeste (Semiárido / Estresse hídrico severo)</option>
+                        <option value="sudeste">Região Sudeste (Clima tropical de altitude / Pluviosidade moderada)</option>
+                    </select>
                 </div>
+                <div id="climate-info-box" class="climate-display-box">
+                    </div>
             </div>
 
             <div class="card">

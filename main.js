@@ -18,12 +18,13 @@ let varietyDatabase = [
     }
 ];
 
-// Repositório Digital de Simulação de Busca Web
-const webSearchRegistry = [
-    { name: "Trigo Nobre", season: "Maio a Julho", etcCommon: 450, etcImproved: 360 },
-    { name: "Café Bourbon Tech", season: "Ano Todo", etcCommon: 1200, etcImproved: 950 },
-    { name: "Arroz Agulha Precoce", season: "Novembro a Dezembro", etcCommon: 800, etcImproved: 680 }
-];
+// Dicionário de Metadados do Zoneamento Climático (Tópico III)
+const climateZoneRegistry = {
+    "sul": "Região Sul: Apresenta alta regularidade hídrica, mas com riscos latentes de geadas em janelas tardias. O uso de sementes bioengenheiradas nesta área foca em estabilização radicular contra excesso de chuva inicial.",
+    "centro-oeste": "Região Centro-Oeste: Marcada por uma forte sazonalidade com inverno estrito e seco. A taxa de evapotranspiração (ETc) dispara no início da safra, tornando modificações estomáticas cruciais para o aproveitamento de água.",
+    "nordeste": "Região Nordeste: Vulnerabilidade severa a veranicos estruturais e secas prolongadas. Cultivos tradicionais sofrem perdas críticas sem irrigação pesada; variedades modificadas mostram economia de impacto vital aqui.",
+    "sudeste": "Região Sudeste: Microclimas diversificados e altitudes variáveis regulam o balanço térmico. Demanda de água moderada, onde o manejo busca ganho de eficiência técnica operacional no ciclo médio."
+};
 
 // Constante Agronômica Fixa (Eficiência do Sistema de Irrigação = 80%)
 const SYSTEM_EFFICIENCY = 0.80;
@@ -31,6 +32,8 @@ const SYSTEM_EFFICIENCY = 0.80;
 // Seletores de Interface Dom
 const sizeInput = document.getElementById('plantation-size');
 const varietySelect = document.getElementById('variety-select');
+const regionSelect = document.getElementById('region-select');
+const climateInfoBox = document.getElementById('climate-info-box');
 const geneModifiers = document.querySelectorAll('.gene-modifier');
 const varietyListElement = document.getElementById('variety-list');
 
@@ -40,25 +43,26 @@ const editCardPanel = document.getElementById('edit-card-panel');
 const editForm = document.getElementById('edit-form');
 const btnCancelEdit = document.getElementById('btn-cancel-edit');
 
-// Elementos de Pesquisa e Displays
-const searchInput = document.getElementById('search-input');
-const btnSearch = document.getElementById('btn-search');
+// Elemento do Display Principal
 const waterSavedDisplay = document.getElementById('water-saved-display');
 
 // Inicializador da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
     renderInterface();
+    updateClimateBox(); // Inicializa o monitor climático
 
     // Ouvintes de evento em tempo real para cálculos
     sizeInput.addEventListener('input', runEngineCalculations);
     varietySelect.addEventListener('change', runEngineCalculations);
     geneModifiers.forEach(box => box.addEventListener('change', runEngineCalculations));
+    
+    // Ouvinte para o monitor climático
+    regionSelect.addEventListener('change', updateClimateBox);
 
     // Submissão separada de Cadastrar e Editar
     registerForm.addEventListener('submit', handleRegistration);
     editForm.addEventListener('submit', handleEdition);
     btnCancelEdit.addEventListener('click', closeEditionPanel);
-    btnSearch.addEventListener('click', performWebSearch);
 });
 
 /**
@@ -75,6 +79,14 @@ function showToast(message, type = 'success') {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
     }, 4000);
+}
+
+/**
+ * Atualiza o painel informativo de clima (Tópico III)
+ */
+function updateClimateBox() {
+    const selectedRegion = regionSelect.value;
+    climateInfoBox.textContent = climateZoneRegistry[selectedRegion] || "";
 }
 
 /**
@@ -196,6 +208,9 @@ window.openEditionPanel = function(id) {
     document.getElementById('edit-name').value = item.name;
     document.getElementById('edit-season').value = item.season;
     document.getElementById('edit-etc-common').value = item.etcCommon;
+    document.getElementById('edit-edit-etc-improved' ? 'edit-etc-improved' : 'edit-etc-improved').value = item.etcImproved;
+
+    // Garante compatibilidade direta de ID nos campos de preenchimento
     document.getElementById('edit-etc-improved').value = item.etcImproved;
 
     editCardPanel.classList.remove('hidden');
@@ -212,7 +227,7 @@ function handleEdition(e) {
     const name = document.getElementById('edit-name').value;
     const season = document.getElementById('edit-season').value;
     const etcCommon = parseFloat(document.getElementById('edit-etc-common').value);
-    const etcImproved = parseFloat(document.getElementById('edit-etc-improved').value);
+    const etcImproved = parseFloat(document.getElementById('edit-edit-etc-improved' ? 'edit-etc-improved' : 'edit-etc-improved').value);
 
     const index = varietyDatabase.findIndex(i => i.id === id);
     if (index !== -1) {
@@ -251,27 +266,4 @@ window.deleteRegistry = function(id) {
     }
     
     renderInterface();
-}
-
-/**
- * Mecanismo de Busca Web Simulado (Google Index Tracker)
- */
-function performWebSearch() {
-    const inputTerms = searchInput.value.trim().toLowerCase();
-    if (!inputTerms) {
-        showToast("Por favor, insira termos válidos de pesquisa.", "error");
-        return;
-    }
-
-    const discovered = webSearchRegistry.find(item => item.name.toLowerCase().includes(inputTerms));
-
-    if (discovered) {
-        document.getElementById('new-name').value = discovered.name;
-        document.getElementById('new-season').value = discovered.season;
-        document.getElementById('new-etc-common').value = discovered.etcCommon;
-        document.getElementById('new-etc-improved').value = discovered.etcImproved;
-        showToast(`Metadados de "${discovered.name}" indexados e importados!`);
-    } else {
-        showToast("Nenhum dado correspondente encontrado nos servidores.", "error");
-    }
 }
