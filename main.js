@@ -1,61 +1,77 @@
 /**
- * Core de Dados da Calculadora EcoGen
- * Contém os dados estruturais iniciais (Gêneros/Variedades padrão)
+ * Banco de dados estrutural e inicial do sistema (Armazenado em Array)
  */
-const varietyDatabase = [
+let varietyDatabase = [
     {
-        id: "soja-gen",
-        name: "Soja (Gênero Glycine)",
-        waterCommon: 550000,   // Litros gastos por hectare na variedade comum
-        waterImproved: 412500, // Litros gastos por hectare com melhoramento básico (-25%)
-        baseYield: 100,        // Percentual base de produtividade
-        season: "Outubro a Dezembro (Primavera)"
+        id: "1",
+        name: "Soja Glicine Standard",
+        season: "Outubro a Dezembro",
+        etcCommon: 500, // mm por ciclo
+        etcImproved: 400 // mm por ciclo
     },
     {
-        id: "milho-gen",
-        name: "Milho (Gênero Zea)",
-        waterCommon: 600000,
-        waterImproved: 480000, // -20% consumo base
-        baseYield: 100,
-        season: "Setembro a Novembro / Safrinha (Jan-Mar)"
+        id: "2",
+        name: "Milho Zea Maiz",
+        season: "Setembro a Novembro",
+        etcCommon: 600,
+        etcImproved: 460
     }
 ];
 
-// Elementos DOM rastreados do HTML
+// Banco de dados simulado para buscas na "web/Google"
+const googleMockDatabase = [
+    { name: "Trigo Nobre", season: "Maio a Julho", etcCommon: 450, etcImproved: 360 },
+    { name: "Café Bourbon Tech", season: "Ano Todo", etcCommon: 1200, etcImproved: 950 },
+    { name: "Arroz Agulha", season: "Novembro a Dezembro", etcCommon: 800, etcImproved: 680 }
+];
+
+// Elementos da Interface
 const sizeInput = document.getElementById('plantation-size');
 const varietySelect = document.getElementById('variety-select');
 const geneModifiers = document.querySelectorAll('.gene-modifier');
+const varietyListElement = document.getElementById('variety-list');
 
-// Elementos de Exibição de Resultados
+// Elementos de Exibição de Métricas
 const waterSavedDisplay = document.getElementById('water-saved-display');
+const tableNirCommon = document.getElementById('table-nir-common');
+const tableNirImproved = document.getElementById('table-nir-improved');
 const tableWaterCommon = document.getElementById('table-water-common');
 const tableWaterImproved = document.getElementById('table-water-improved');
-const tableYieldImproved = document.getElementById('table-yield-improved');
 const tableSeasonRecommendation = document.getElementById('table-season-recommendation');
 
-// Formulário de Cadastro
+// Componentes do Formulário de Gerenciamento
 const registerForm = document.getElementById('register-form');
+const editIdInput = document.getElementById('edit-id');
+const formTitle = document.getElementById('form-title');
+const btnCancelEdit = document.getElementById('btn-cancel-edit');
+const searchInput = document.getElementById('search-input');
+const btnSearch = document.getElementById('btn-search');
 
-/**
- * Inicialização e Event Listeners principais
- */
+const IRRIGATION_EFFICIENCY = 0.80; // Ei = 80% (Padrão para sistemas de aspersão tradicionais)
+
 document.addEventListener('DOMContentLoaded', () => {
-    populateSelectOptions();
-    runCalculator(); // Roda o cálculo primário estrutural
-
-    // Detecta interações em tempo real para cálculo dinâmico
-    sizeInput.addEventListener('input', runCalculator);
-    varietySelect.addEventListener('change', runCalculator);
+    updateUI();
     
-    geneModifiers.forEach(checkbox => {
-        checkbox.addEventListener('change', runCalculator);
-    });
+    sizeInput.addEventListener('input', runAgronomicCalculator);
+    varietySelect.addEventListener('change', runAgronomicCalculator);
+    geneModifiers.forEach(box => box.addEventListener('change', runAgronomicCalculator));
+    
+    registerForm.addEventListener('submit', handleFormSubmit);
+    btnCancelEdit.addEventListener('click', cancelEditing);
+    btnSearch.addEventListener('click', triggerGoogleSearch);
 });
 
 /**
- * Alimenta dinamicamente a tag Select com as variedades disponíveis
+ * Atualiza os elementos visuais dependentes dos dados mutáveis
  */
-function populateSelectOptions() {
+function updateUI() {
+    populateSelect();
+    renderManagementList();
+    runAgronomicCalculator();
+}
+
+function populateSelect() {
+    const currentSelection = varietySelect.value;
     varietySelect.innerHTML = '';
     varietyDatabase.forEach(item => {
         const option = document.createElement('option');
@@ -63,91 +79,150 @@ function populateSelectOptions() {
         option.textContent = item.name;
         varietySelect.appendChild(option);
     });
+    if (currentSelection && varietyDatabase.some(i => i.id === currentSelection)) {
+        varietySelect.value = currentSelection;
+    }
 }
 
 /**
- * Função Mestra de Cálculo e Comparação (Simulação)
+ * Renderiza a lista de edição e exclusão (CRUD)
  */
-function runCalculator() {
-    const sizeInHectares = parseFloat(sizeInput.value) || 0;
-    const selectedId = varietySelect.value;
-    
-    // Busca o objeto correspondente no banco fictício
-    const targetVariety = varietyDatabase.find(item => item.id === selectedId);
-    
-    if (!targetVariety) return;
+function renderManagementList() {
+    varietyListElement.innerHTML = '';
+    varietyDatabase.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${item.name} (${item.etcCommon}mm / ${item.etcImproved}mm)</span>
+            <div class="list-actions">
+                <button type="button" class="btn-edit-action" onclick="prepareEdit('${item.id}')">Editar</button>
+                <button type="button" class="btn-delete-action" onclick="deleteVariety('${item.id}')">Excluir</button>
+            </div>
+        `;
+        varietyListElement.appendChild(li);
+    });
+}
 
-    // 1. Processamento das modificações genéticas extras ativadas pelo usuário
-    let extraWaterBonusPercent = 0;
-    let extraYieldBonusPercent = 0;
+/**
+ * Executa as fórmulas agronômicas de irrigação líquida e conversão volumétrica
+ */
+function runAgronomicCalculator() {
+    const area = parseFloat(sizeInput.value) || 0;
+    const targetId = varietySelect.value;
+    const culture = varietyDatabase.find(i => i.id === targetId);
 
-    geneModifiers.forEach(checkbox => {
-        if (checkbox.checked) {
-            if (checkbox.dataset.waterBonus) {
-                extraWaterBonusPercent += parseFloat(checkbox.dataset.waterBonus);
-            }
-            if (checkbox.dataset.yieldBonus) {
-                extraYieldBonusPercent += parseFloat(checkbox.dataset.yieldBonus);
-            }
-        }
+    if (!culture) {
+        waterSavedDisplay.textContent = "0 Litros";
+        return;
+    }
+
+    // Aplicação dos modificadores de laboratório (Redução direta do Kc/Etc)
+    let kcReduction = 0;
+    geneModifiers.forEach(box => {
+        if (box.checked) kcReduction += parseFloat(box.dataset.kcReduction);
     });
 
-    // 2. Cálculo do Consumo de Água da Semente Comum
-    const totalWaterCommon = targetVariety.waterCommon * sizeInHectares;
+    const adjustedEtcImproved = culture.etcImproved * ((100 - kcReduction) / 100);
 
-    // 3. Cálculo da Semente Melhorada aplicando modificações do Simulador
-    // Reduz ainda mais o consumo baseado nos bônus ativados
-    const baseImprovedWaterPerHa = targetVariety.waterImproved;
-    const modifierFactor = (100 - extraWaterBonusPercent) / 100;
-    const finalImprovedWaterPerHa = baseImprovedWaterPerHa * modifierFactor;
-    
-    const totalWaterImproved = finalImprovedWaterPerHa * sizeInHectares;
+    // Fórmula Agronômica: Necessidade de Irrigação Líquida (NIR = ETc / Ei)
+    const nirCommon = culture.etcCommon / IRRIGATION_EFFICIENCY;
+    const nirImproved = adjustedEtcImproved / IRRIGATION_EFFICIENCY;
 
-    // 4. Cálculo da Economia Líquida de Água
-    const netWaterSaved = totalWaterCommon - totalWaterImproved;
+    // Fórmula de Conversão Volumétrica Total (Lâmina mm para Litros numa Área A): V = NIR * A * 10.000
+    const litersCommon = nirCommon * area * 10000;
+    const litersImproved = nirImproved * area * 10000;
+    const waterSaved = litersCommon - litersImproved;
 
-    // 5. Cálculo do ganho de produtividade
-    const finalYield = targetVariety.baseYield + extraYieldBonusPercent;
-
-    // Renderização dos Dados na Tela com Formatação Numérica Brasileira
-    waterSavedDisplay.textContent = `${netWaterSaved.toLocaleString('pt-BR')} Litros`;
-    tableWaterCommon.textContent = `${totalWaterCommon.toLocaleString('pt-BR')} L`;
-    tableWaterImproved.textContent = `${totalWaterImproved.toLocaleString('pt-BR')} L`;
-    tableYieldImproved.textContent = `${finalYield}% (Aumento de +${extraYieldBonusPercent}%)`;
-    tableSeasonRecommendation.textContent = `Época Sugerida de Plantio: ${targetVariety.season}`;
+    // Atualização da Tabela e Painel
+    waterSavedDisplay.textContent = `${Math.round(waterSaved).toLocaleString('pt-BR')} Litros`;
+    tableNirCommon.textContent = `${Math.round(nirCommon)} mm`;
+    tableNirImproved.textContent = `${Math.round(nirImproved)} mm`;
+    tableWaterCommon.textContent = `${Math.round(litersCommon).toLocaleString('pt-BR')} L`;
+    tableWaterImproved.textContent = `${Math.round(litersImproved).toLocaleString('pt-BR')} L`;
+    tableSeasonRecommendation.textContent = `Período de Semeadura Recomendado: ${culture.season}`;
 }
 
 /**
- * Manipulador do Formulário de Cadastro de Novas Variedades/Gêneros
+ * Processa a submissão do formulário (Criação ou Edição)
  */
-registerForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // Impede o recarregamento do site
-
-    // Coleta as inputs do usuário
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const id = editIdInput.value;
     const name = document.getElementById('new-name').value;
     const season = document.getElementById('new-season').value;
-    const waterCommon = parseFloat(document.getElementById('new-water-common').value);
-    const waterImproved = parseFloat(document.getElementById('new-water-improved').value);
+    const etcCommon = parseFloat(document.getElementById('new-etc-common').value);
+    const etcImproved = parseFloat(document.getElementById('new-etc-improved').value);
 
-    // Cria um ID amigável único baseado no timestamp
-    const id = `custom-${Date.now()}`;
+    if (id) {
+        // Modo Edição (U do CRUD)
+        const index = varietyDatabase.findIndex(i => i.id === id);
+        if (index !== -1) {
+            varietyDatabase[index] = { id, name, season, etcCommon, etcImproved };
+        }
+        cancelEditing();
+    } else {
+        // Modo Criação (C do CRUD)
+        const newId = String(Date.now());
+        varietyDatabase.push({ id: newId, name, season, etcCommon, etcImproved });
+        registerForm.reset();
+    }
 
-    // Insere o novo objeto mapeado no array global de dados
-    varietyDatabase.push({
-        id,
-        name: `${name} (Custom)`,
-        waterCommon,
-        waterImproved,
-        baseYield: 100,
-        season
-    });
+    updateUI();
+}
 
-    // Atualiza o componente visual de escolha, seleciona o novo item e recalcula
-    populateSelectOptions();
-    varietySelect.value = id;
-    runCalculator();
+/**
+ * Prepara os campos do formulário para edição (Preenchimento)
+ */
+window.prepareEdit = function(id) {
+    const culture = varietyDatabase.find(i => i.id === id);
+    if (!culture) return;
 
-    // Limpa o formulário após cadastro bem-sucedido
+    editIdInput.value = culture.id;
+    document.getElementById('new-name').value = culture.name;
+    document.getElementById('new-season').value = culture.season;
+    document.getElementById('new-etc-common').value = culture.etcCommon;
+    document.getElementById('new-etc-improved').value = culture.etcImproved;
+
+    formTitle.textContent = "III. Editando Variedade";
+    document.getElementById('btn-submit-form').textContent = "Atualizar Dados";
+    btnCancelEdit.classList.remove('hidden');
+};
+
+function cancelEditing() {
+    editIdInput.value = "";
     registerForm.reset();
-    alert(`Variedade "${name}" registrada com sucesso e aplicada ao simulador!`);
-});
+    formTitle.textContent = "III. Cadastrar / Editar Variedade";
+    document.getElementById('btn-submit-form').textContent = "Salvar Variedade";
+    btnCancelEdit.classList.add('hidden');
+}
+
+/**
+ * Remove elemento do array de dados (D do CRUD)
+ */
+window.deleteVariety = function(id) {
+    if (confirm("Deseja realmente remover esta variedade do banco de dados?")) {
+        varietyDatabase = varietyDatabase.filter(item => item.id !== id);
+        updateUI();
+    }
+};
+
+/**
+ * Função de busca que simula uma varredura do Google trazendo dados agronômicos indexados
+ */
+function triggerGoogleSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) return alert("Digite o nome de um cultivo para pesquisar.");
+
+    // Procura por correspondência parcial no banco simulado externo
+    const match = googleMockDatabase.find(item => item.name.toLowerCase().includes(query));
+
+    if (match) {
+        document.getElementById('new-name').value = match.name;
+        document.getElementById('new-season').value = match.season;
+        document.getElementById('new-etc-common').value = match.etcCommon;
+        document.getElementById('new-etc-improved').value = match.etcImproved;
+        alert(`Sucesso! Encontrado via web: "${match.name}". Os dados técnicos foram inseridos no formulário.`);
+    } else {
+        alert("Variedade não encontrada na indexação simulada. Tente termos como 'Trigo', 'Café' ou 'Arroz'.");
+    }
+}
